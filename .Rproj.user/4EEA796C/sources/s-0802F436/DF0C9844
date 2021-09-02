@@ -1,0 +1,27 @@
+{
+    "id": "DF0C9844",
+    "path": "~/Desktop/CPart/src/driver.R",
+    "project_path": "src/driver.R",
+    "type": "r_source",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1626234267286.0,
+    "source_on_save": false,
+    "relative_order": 2,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "9,0",
+        "scrollLine": "0",
+        "marks": "<:0,10\n>:0,11"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1626416978,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1626416978287,
+    "read_only": false,
+    "read_only_alternatives": []
+}

@@ -1,0 +1,20 @@
+#include <Rcpp.h>
+#include <vector>
+#include <algorithm>
+
+// sum of squared errors
+float sse (const Rcpp::NumericVector v, const std::vector<int>& trueRows, const std::vector<int>& falseRows, 
+                    const float& trueMean, const float& falseMean) {
+
+    float ss = 0;
+
+    for (const auto& i : trueRows)
+        ss += (v[i] - trueMean);
+
+    for (const auto& i : falseRows)
+       ss += (v[i] - falseMean); 
+
+    return ss;
+}
+
+

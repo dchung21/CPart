@@ -1,0 +1,10 @@
+#include <Rcpp.h>
+#include <DecisionTree.h>
+
+using namespace Rcpp;
+
+// [[Rcpp::export]]
+void test(const DataFrame& df) {
+    std::cout << "hello" << std::endl;
+    DecisionTree dt (df, "red");
+}

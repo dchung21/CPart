@@ -1,0 +1,61 @@
+#ifndef RULE_H
+#define RULE_H
+
+#include <Rcpp.h>
+
+
+/*
+ * A rule partitions the dataset
+ * @params:
+ * column: column of data
+ * value : value to check if column >= value
+ *
+ */
+
+template <typename U>
+class Rule {
+    private:
+        std::string column;
+        U value;
+        float sse;
+
+        bool matchHelper(const float value) {
+            return value >= this->value;
+        }
+
+        bool matchHelper(const Rcpp::String value) {
+            return value == this->value;
+        }
+
+    public:
+        Rule(std::string column, U value) {
+            this->column = column;
+            this->value = value;
+        }
+
+        // default constructor for dummy rules
+        Rule() {
+            this->column = "";
+            this->value = 0;
+        }
+
+        bool match(const U val) {
+            return matchHelper(val);
+        }
+
+        // do later....
+        std::string getRule() {
+            std::cout << this->column << " >= " << this->value << std::endl;
+            return "hi";
+        }
+
+        void setSSE(float sse) {
+            this->sse = sse;
+        }
+
+        float getSSE() {
+            return this->sse;
+        }
+};
+
+#endif

@@ -1,0 +1,10 @@
+library(Rcpp)
+
+sourceCpp("~/Desktop/CPart/src/driver.cpp")
+
+df = data.frame(
+    "color" = c("red", "blue", "green"),
+    "length" = c(4, 1, 1)
+)
+
+test(df)
