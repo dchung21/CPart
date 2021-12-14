@@ -18,11 +18,14 @@ class DecisionTree {
         //float sumThreshold;
         float threshold;
         Rcpp::NumericVector targetCol;
+        unsigned int leaves = 0; 
 
         Node* buildTree(const Rcpp::DataFrame& df, const std::vector<int> rows) {
             // if we have reached a row threshold we're done building thre tree
-            if (rows.size() <= threshold)
+            if (rows.size() <= threshold) {
+                leaves++;
                 return new Leaf(this->targetCol, rows);
+            }
 
             // else we have to find the best split first
             Rule* r = nullptr;
@@ -31,7 +34,6 @@ class DecisionTree {
                 std::string colName = Rcpp::as<std::string>(col);
                 Rcpp::NumericVector dfcol = df[colName];
                 r = buildTreeHelper(dfcol, rows, colName);
-                std::cout << r->getRule() << " " << r->getSSE() << std::endl;
                 if (r->getSSE() < rule->getSSE())
                     rule = r;
 
@@ -44,7 +46,6 @@ class DecisionTree {
             std::vector<int> trueRows, falseRows;
 
             Rcpp::NumericVector dfcol = df[rule->getColumn()];
-            std::cout << rule->getRule() << std::endl;
             for (const auto& i : rows) {
                 if (rule->match(dfcol[i])) 
                     trueRows.push_back(i);
@@ -53,7 +54,6 @@ class DecisionTree {
                 }
             }
 
-            std::cout << rule->getSSE() << std::endl;
             DecisionNode* node = new DecisionNode(rule);
             node->trueEdge = buildTree(df, trueRows);
             node->falseEdge = buildTree(df, falseRows); 
@@ -181,4 +181,8 @@ class DecisionTree {
         void printTree() {
             dfs(root);
         } 
+
+        unsigned int getNumLeaves() {
+            return leaves;
+        }
 };

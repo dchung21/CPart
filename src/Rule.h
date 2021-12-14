@@ -15,7 +15,7 @@
 class Rule {
     private:
         std::string column;
-        float value;
+        double value;
         float sse = std::numeric_limits<float>::infinity();
 
     public:
@@ -47,6 +47,10 @@ class Rule {
 
         std::string getColumn() {
             return this->column;
+        }
+
+        std::double getValue() {
+            return this->value;
         }
 };
 
