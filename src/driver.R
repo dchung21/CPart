@@ -28,5 +28,5 @@ X = X %>% filter(X5 >= 0.494426)
 model <- tree(Y ~ ., data = X)
 plot(model)
 text(model)
-test(X, "Y", 10)
+test(X)
 

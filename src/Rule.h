@@ -14,19 +14,19 @@
 
 class Rule {
     private:
-        std::string column;
+        unsigned int column;
         double value;
         float sse = std::numeric_limits<float>::infinity();
 
     public:
-        Rule(std::string column, float value) {
+        Rule(unsigned int column, float value) {
             this->column = column;
             this->value = value;
         }
 
         // default constructor for dummy rules
         Rule() {
-            this->column = "";
+            this->column = 0;
         }
 
         bool match(const float val) {
@@ -34,7 +34,7 @@ class Rule {
         }
 
         std::string getRule() {
-            return this->column + " < " + std::to_string(this->value);
+            return std::to_string(this->column) + " < " + std::to_string(this->value);
         }
 
         float getSSE() {
@@ -45,11 +45,11 @@ class Rule {
             this->sse = sse; 
         }
 
-        std::string getColumn() {
+        unsigned int getColumn() {
             return this->column;
         }
 
-        std::double getValue() {
+        double getValue() {
             return this->value;
         }
 };
