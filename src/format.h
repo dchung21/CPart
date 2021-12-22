@@ -7,9 +7,15 @@
 #include "Node.h"
 #include "Rule.h"
 
+
 class Node;
 class Rule;
 
+/*
+ * type representing the values a predictor x_i can take on
+ * 
+ *
+ */
 struct Interval {
     public:
         double lowerBound;
@@ -39,8 +45,8 @@ std::vector<Interval*> createDefault(const unsigned int& n, Rcpp::NumericMatrix&
 // merge two intervals in place
 // i1 contains the resulting interval
 void merge(Interval* i1, Interval* i2) {
-    i1->lowerBound = std::min(i1->lowerBound, i2->lowerBound);
-    i1->upperBound = std::max(i1->upperBound, i2->upperBound);
+    i1->lowerBound = std::max(i1->lowerBound, i2->lowerBound);
+    i1->upperBound = std::min(i1->upperBound, i2->upperBound);
 }
 
 
@@ -72,17 +78,9 @@ Rcpp::NumericMatrix extractSupport(const Rcpp::DataFrame& df) {
 }
 
 
-Rcpp::NumericMatrix extractPartition(const Rcpp::DataFrame& df, const Rcpp::NumericMatrix& support, Node* root, const unsigned int& numLeaves) {
-    std::vector<Interval*> mergeIntervals; 
-    Rcpp::NumericMatrix partitions(numLeaves, df.ncol() * 2);
 
-    Rcpp::NumericMatrix support = extractSupport(df);
-    dfs(root, numLeaves, n, mergeIntervals, partitions, support);
 
-    return partitions;
-}
-
-void dfs(Node* root, unsigned int& k, unsigned int& n, std::vector<Interval*>& mergeIntervals, Rcpp::NumericMatrix& partitions, Rcpp::NumericMatrix support) {
+void dfs(Node* root, unsigned int& k, const unsigned int& n, std::vector<Interval*>& mergeIntervals, Rcpp::NumericMatrix& partitions, Rcpp::NumericMatrix support) {
     // we've reached a leaf record the results 
     if (!root->trueEdge && !root->falseEdge) {
         // if an interval has the same predictor have to merge
@@ -97,30 +95,51 @@ void dfs(Node* root, unsigned int& k, unsigned int& n, std::vector<Interval*>& m
         }
 
         // then place the result in the matrix
-        for (unsigned int j = 0; j < 2*n; j++) {
-            partitions(k, j) = correctIntervals[j]->lower;
-            partitions(k, j+1) = correctIntervals[j+1]->upper;
+        for (unsigned int j = 0, i = 0; j < 2*n && i < n; j += 2, i++) {
+            partitions(k, j) = correctIntervals[i]->lowerBound;
+            partitions(k, j+1) = correctIntervals[i]->upperBound;
         }
+         
         k++;
+        return;
     }
 
     // extract rule
     Rule* rule = root->getRule();
     unsigned int predictor = rule->getColumn();
-    double upper = support(predictor, 0);
-    double lower = support(predictor, 1);
+    double lower = support(predictor, 0);
+    double upper = support(predictor, 1);
 
     // dfs routine
-    Interval* interval = new Interval(predictor, root->getVal(), upper);
+    double ruleValue = root->getRule()->getValue();
+
+    // true edge
+    Interval* interval = new Interval(ruleValue, upper, predictor);
     mergeIntervals.push_back(interval);
     dfs(root->trueEdge, k, n, mergeIntervals, partitions, support);
     delete mergeIntervals.back();
     mergeIntervals.pop_back();
-    interval = new Interval(predictor, lower, root->getVal());
+
+    
+    // false edge
+    interval = new Interval(lower, ruleValue, predictor);
     mergeIntervals.push_back(interval);
     dfs(root->falseEdge, k, n, mergeIntervals, partitions, support);
     delete mergeIntervals.back();
     mergeIntervals.pop_back();
+    
 }
 
+Rcpp::NumericMatrix extractPartition(const Rcpp::DataFrame& df, Node* root, const unsigned int& numLeaves) {
+    std::vector<Interval*> mergeIntervals; 
+    const unsigned int n = df.ncol();
+    unsigned int k = numLeaves;
+    Rcpp::NumericMatrix partitions(numLeaves, 2*n);
+
+    Rcpp::NumericMatrix support = extractSupport(df);
+    unsigned int i = 0;
+    dfs(root, i, n, mergeIntervals, partitions, support);
+
+    return partitions;
+}
 #endif

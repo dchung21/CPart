@@ -16,10 +16,10 @@ class Rule {
     private:
         unsigned int column;
         double value;
-        float sse = std::numeric_limits<float>::infinity();
+        double sse = std::numeric_limits<double>::infinity();
 
     public:
-        Rule(unsigned int column, float value) {
+        Rule(unsigned int column, double value) {
             this->column = column;
             this->value = value;
         }
@@ -33,15 +33,11 @@ class Rule {
             return val < this->value;
         }
 
-        std::string getRule() {
-            return std::to_string(this->column) + " < " + std::to_string(this->value);
-        }
-
-        float getSSE() {
+        double getSSE() {
             return this->sse;
         }
 
-        void setSSE(const float sse) {
+        void setSSE(const double sse) {
             this->sse = sse; 
         }
 

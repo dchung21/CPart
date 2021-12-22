@@ -2,12 +2,12 @@
 #include <vector>
 #include <limits>
 #include <queue>
-#include "Leaf.h"
 #include "Rule.h"
-#include "DecisionNode.h"
 #include "util.h"
+#include "Node.h"
 
 class Node; 
+class Rule;
 
 class DecisionTree {
     private:
@@ -24,22 +24,25 @@ class DecisionTree {
             // if we have reached a row threshold we're done building thre tree
             if (rows.size() <= threshold) {
                 leaves++;
-                return new Leaf(this->targetCol, rows);
+                return new Node(this->targetCol, rows);
             }
 
             // else we have to find the best split first
             Rule* r = nullptr;
             Rule* rule = new Rule();
-            for (const auto& col : colNames) {
-                std::string colName = Rcpp::as<std::string>(col);
+            unsigned int N = colNames.size();
+            for (unsigned int i = 0; i < N; i++) {
+                std::string colName = Rcpp::as<std::string>(colNames[i]);
                 Rcpp::NumericVector dfcol = df[colName];
-                r = buildTreeHelper(dfcol, rows, colName);
-                if (r->getSSE() < rule->getSSE())
+                r = buildTreeHelper(dfcol, rows, i);
+                if (r->getSSE() < rule->getSSE()) {
                     rule = r;
+                }
 
-                else 
+                else {
                     delete r;
-            }
+                }
+            } 
 
             // at this stage we have found the rule that minimizes sse
             // now we partition the rows
@@ -54,7 +57,7 @@ class DecisionTree {
                 }
             }
 
-            DecisionNode* node = new DecisionNode(rule);
+            Node* node = new Node(rule);
             node->trueEdge = buildTree(df, trueRows);
             node->falseEdge = buildTree(df, falseRows); 
 
@@ -62,7 +65,7 @@ class DecisionTree {
         }
 
         // find optimal rule by minimizing sum of squared errors
-        Rule* buildTreeHelper(const Rcpp::NumericVector& vec, const std::vector<int>& rows, const std::string& col) {
+        Rule* buildTreeHelper(const Rcpp::NumericVector& vec, const std::vector<int>& rows, const unsigned int col) {
             Rule* r;
             Rule* rule = new Rule();
             Rcpp::NumericVector sortedVec = clone(vec);
@@ -181,6 +184,10 @@ class DecisionTree {
         void printTree() {
             dfs(root);
         } 
+
+        Node* getRoot() {
+            return root;
+        }
 
         unsigned int getNumLeaves() {
             return leaves;

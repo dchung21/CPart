@@ -5,7 +5,7 @@ class Rule;
 
 class Node {
     private:
-        Rule* rule;
+        Rule* rule = nullptr;
         double val = 0;
 
     public:
@@ -33,7 +33,14 @@ class Node {
         Node* trueEdge = nullptr;
         Node* falseEdge = nullptr;
         virtual void printNode() {
-            std::cout << "test" << std::endl;
+            if (this->rule) {
+                //std::cout << std::to_string(rule->getColumn()) << std::endl;
+                std::cout << "X" << this->rule->getColumn() << " < " << this->rule->getValue() << std::endl;
+            }
+
+            else {
+                std::cout << "Leaf Node: " << std::to_string(val) << std::endl;
+            }
         }
 
 };
