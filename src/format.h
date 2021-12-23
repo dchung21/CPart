@@ -31,6 +31,10 @@ struct Interval {
         bool operator < (const Interval& interval) const {
             return lowerBound < interval.lowerBound;
         }
+
+        void print() {
+            std::cout << "[ " << this->lowerBound << ", " << this->upperBound << "]" << std::endl;
+        }
 };
 
 std::vector<Interval*> createDefault(const unsigned int& n, Rcpp::NumericMatrix& support) {
@@ -45,8 +49,13 @@ std::vector<Interval*> createDefault(const unsigned int& n, Rcpp::NumericMatrix&
 // merge two intervals in place
 // i1 contains the resulting interval
 void merge(Interval* i1, Interval* i2) {
+    std::cout << "BEGIN MERGE" << std::endl;
+    i1->print();
+    i2->print();
+    std::cout << "====" << std::endl;
     i1->lowerBound = std::max(i1->lowerBound, i2->lowerBound);
     i1->upperBound = std::min(i1->upperBound, i2->upperBound);
+    i1->print();
 }
 
 
@@ -93,6 +102,7 @@ void dfs(Node* root, unsigned int& k, const unsigned int& n, std::vector<Interva
             Interval* targetInterval = correctIntervals[interval->predictor];
             merge(targetInterval, interval); 
         }
+        std::cout << "done merging" << std::endl;
 
         // then place the result in the matrix
         for (unsigned int j = 0, i = 0; j < 2*n && i < n; j += 2, i++) {
@@ -135,8 +145,8 @@ Rcpp::NumericMatrix extractPartition(const Rcpp::DataFrame& df, Node* root, cons
     const unsigned int n = df.ncol();
     unsigned int k = numLeaves;
     Rcpp::NumericMatrix partitions(numLeaves, 2*n);
-
     Rcpp::NumericMatrix support = extractSupport(df);
+
     unsigned int i = 0;
     dfs(root, i, n, mergeIntervals, partitions, support);
 

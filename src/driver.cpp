@@ -8,12 +8,13 @@ class Node;
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-Rcpp::NumericMatrix test(const DataFrame& df) {
+Rcpp::NumericMatrix test(const DataFrame& df, const DataFrame& X) {
+
     DecisionTree* dt = new DecisionTree(df, "Y");
-    //dt->printTree();
+    dt->printTree();
     const unsigned int numLeaves = dt->getNumLeaves();
     Node* root = dt->getRoot();
-    Rcpp::NumericMatrix res = extractPartition(df, root, numLeaves);
+    Rcpp::NumericMatrix res = extractPartition(X, root, numLeaves);
     delete dt;
 
     printf("a\n");
