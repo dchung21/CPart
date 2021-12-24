@@ -14,8 +14,14 @@ beta = 1:d
 eps = rnorm(n, 0, 3)
 y = X %*% beta + eps # response
 
+tree_model = rpart(y ~ X)
+
+plot(tree_model)
+text(tree_model)
+
+og_X = X
 X = cbind(X, y)
 X = data.frame(X)
 names(X)[6] = "Y"
-test(X)
+test(X, X)
 

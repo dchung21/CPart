@@ -1,6 +1,5 @@
 #include <Rcpp.h>
 #include <vector>
-#include <algorithm>
 
 // sum of squared errors
 float sse (const Rcpp::NumericVector v, const std::vector<int>& trueRows, const std::vector<int>& falseRows, 

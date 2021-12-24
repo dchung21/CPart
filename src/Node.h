@@ -22,6 +22,16 @@ class Node {
             val /= rows.size();
         }
 
+        // temp constructor just for testing
+        Node(double x) {
+            this->val = x;
+        }
+
+        ~Node() {
+            if (rule)
+                delete rule;
+        }
+
         double getVal() {
             return val;
         }

@@ -8,9 +8,6 @@
 #include "Rule.h"
 
 
-class Node;
-class Rule;
-
 /*
  * type representing the values a predictor x_i can take on
  * 
@@ -49,18 +46,12 @@ std::vector<Interval*> createDefault(const unsigned int& n, Rcpp::NumericMatrix&
 // merge two intervals in place
 // i1 contains the resulting interval
 void merge(Interval* i1, Interval* i2) {
-    std::cout << "BEGIN MERGE" << std::endl;
-    i1->print();
-    i2->print();
-    std::cout << "====" << std::endl;
     i1->lowerBound = std::max(i1->lowerBound, i2->lowerBound);
     i1->upperBound = std::min(i1->upperBound, i2->upperBound);
-    i1->print();
 }
 
 
 // extract support from generated data
-// Rcpp::NumericMatrix extractSupport(const Rcpp::DataFrame& df) {
 // assume nonzero df length
 Rcpp::NumericMatrix extractSupport(const Rcpp::DataFrame& df) {
     const unsigned int n = df.ncol();
@@ -102,7 +93,6 @@ void dfs(Node* root, unsigned int& k, const unsigned int& n, std::vector<Interva
             Interval* targetInterval = correctIntervals[interval->predictor];
             merge(targetInterval, interval); 
         }
-        std::cout << "done merging" << std::endl;
 
         // then place the result in the matrix
         for (unsigned int j = 0, i = 0; j < 2*n && i < n; j += 2, i++) {
@@ -123,21 +113,20 @@ void dfs(Node* root, unsigned int& k, const unsigned int& n, std::vector<Interva
     // dfs routine
     double ruleValue = root->getRule()->getValue();
 
+ 
     // true edge
-    Interval* interval = new Interval(ruleValue, upper, predictor);
+    Interval* interval = new Interval(lower, ruleValue, predictor);
     mergeIntervals.push_back(interval);
     dfs(root->trueEdge, k, n, mergeIntervals, partitions, support);
     delete mergeIntervals.back();
     mergeIntervals.pop_back();
 
-    
     // false edge
-    interval = new Interval(lower, ruleValue, predictor);
+    interval = new Interval(ruleValue, upper, predictor);
     mergeIntervals.push_back(interval);
     dfs(root->falseEdge, k, n, mergeIntervals, partitions, support);
     delete mergeIntervals.back();
     mergeIntervals.pop_back();
-    
 }
 
 Rcpp::NumericMatrix extractPartition(const Rcpp::DataFrame& df, Node* root, const unsigned int& numLeaves) {
