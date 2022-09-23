@@ -1,8 +1,9 @@
-#include <Rcpp.h>
+#include <RcppArmadillo.h>
 #include <DecisionTree.h>
 #include <format.h>
 #include "Rule.h"
 
+// [[Rcpp::depends(RcppArmadillo)]]
 class Node;
 
 using namespace Rcpp;

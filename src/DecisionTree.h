@@ -1,10 +1,12 @@
-#include <Rcpp.h>
+#include <RcppArmadillo.h>
 #include <vector>
 #include <limits>
 #include <queue>
 #include "Rule.h"
 #include "util.h"
 #include "Node.h"
+
+// [[Rcpp::depends(RcppArmadillo)]]
 
 class Node; 
 class Rule;

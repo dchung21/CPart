@@ -1,4 +1,4 @@
-library(Rcpp)
+library(RcppArmadillo)
 library(rpart)
 library(rpart.plot)
 library(tree)
@@ -20,8 +20,9 @@ plot(tree_model)
 text(tree_model)
 
 og_X = X
+og_X = data.frame(og_X)
 X = cbind(X, y)
 X = data.frame(X)
 names(X)[6] = "Y"
-test(X, X)
+res = test(X, og_X)
 
